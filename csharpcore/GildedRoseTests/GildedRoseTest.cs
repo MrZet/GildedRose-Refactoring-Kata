@@ -260,5 +260,42 @@ namespace GildedRoseTests
             Assert.Equal(26, Items[0].Quality);    
         }
         #endregion
+
+        #region Item Builder Test
+        [Fact]
+        public void TestUsingBuilder_QualityForNormalItem()
+        {
+            var builder = new BuildNormalItem();
+            builder.SetName("Mangusta");
+            builder.SetSellIn(10);
+            builder.SetQuality(20);
+            builder.SetExpirationDate();
+            var item = builder.Build();
+
+            IList<ExpirableItem> Items = new List<ExpirableItem>{item};
+            GildedRose app = new GildedRose(Items);
+            app.UpdateQuality();
+            Assert.Equal(19, Items[0].Quality);    
+            Assert.Equal(1, Items[0].ExpirationSpeed);   
+        }
+
+        [Fact]
+        public void TestUsingBuilder_QualityForConjuredItem()
+        {
+            var builder = new BuildConjuredItem();
+            builder.SetName("Mangusta");
+            builder.SetSellIn(10);
+            builder.SetQuality(20);
+            builder.SetExpirationDate();
+            var item = builder.Build();
+
+            IList<ExpirableItem> Items = new List<ExpirableItem>{item};
+            GildedRose app = new GildedRose(Items);
+            app.UpdateQuality();
+            Assert.Equal(18, Items[0].Quality);    
+            Assert.Equal(2, Items[0].ExpirationSpeed);   
+            Assert.Equal("Conjured Mangusta", Items[0].Name);   
+        }
+        #endregion
     }
 }
