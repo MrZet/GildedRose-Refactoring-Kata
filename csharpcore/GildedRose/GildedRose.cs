@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace GildedRoseKata
 {
     public class GildedRose
     {
-        IList<Item> Items;
-        public GildedRose(IList<Item> Items)
+        IList<ExpirableItem> Items;
+        public GildedRose(IList<ExpirableItem> Items)
         {
             this.Items = Items;
         }
@@ -17,13 +16,13 @@ namespace GildedRoseKata
             {
                 switch (Items[i].Name)
                 {
-                    case "Aged Brie":
+                    case string s when s.Contains("Aged Brie"):
                         new GildedRoseKata.QualityCalculationAgedBrie(Items[i]).Calculate();
                         break;
-                    case "Sulfuras, Hand of Ragnaros":
+                    case string s when s.Contains("Sulfuras, Hand of Ragnaros"):
                         new GildedRoseKata.QualityCalculationSulfuras(Items[i]).Calculate();
                         break;
-                    case "Backstage passes to a TAFKAL80ETC concert":
+                    case string s when s.Contains("Backstage passes to a TAFKAL80ETC concert"):
                         new GildedRoseKata.QualityCalculationBackstagePass(Items[i]).Calculate();
                         break;
                     default: 

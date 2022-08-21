@@ -2,8 +2,8 @@ namespace GildedRoseKata
 {
     public abstract class QualityCalculation
     {
-        private Item Item;
-        public QualityCalculation(Item item)
+        private ExpirableItem Item;
+        public QualityCalculation(ExpirableItem item)
         {
             Item = item;
         }
@@ -14,55 +14,65 @@ namespace GildedRoseKata
             CalculateSellIn(Item);
             CalculateQualityForExpiredItems(Item);            
         }
-        protected abstract void CalculateQuality(Item item);
+        protected abstract void CalculateQuality(ExpirableItem item);
 
-        protected virtual void CalculateSellIn(Item item)
+        protected virtual void CalculateSellIn(ExpirableItem item)
         {
             item.SellIn = item.SellIn - 1;
         }
 
-        protected abstract void CalculateQualityForExpiredItems(Item item);
+        protected abstract void CalculateQualityForExpiredItems(ExpirableItem item);
 
-        protected static bool IsItemExpired(Item item) => item.SellIn < 0 ? true : false;
+        protected static bool IsItemExpired(ExpirableItem item) => item.SellIn < 0 ? true : false;
+
+        protected static int SetQuality(ExpirableItem item, int value)
+        {
+            int calculatedValue = item.Quality + value * item.ExpirationSpeed;
+            calculatedValue = calculatedValue < 0 ? 0 : calculatedValue;
+            calculatedValue = calculatedValue > 50 ? 50 : calculatedValue;
+            return calculatedValue;
+        }
     }
 
     public class QualityCalculationNormalItem : QualityCalculation
     {
-        public QualityCalculationNormalItem(Item item) : base(item)
+        public QualityCalculationNormalItem(ExpirableItem item) : base(item)
         {}     
 
-        protected override void CalculateQuality(Item item)
+        protected override void CalculateQuality(ExpirableItem item)
         {
             if (item.Quality <= 0)
             {
                 return;
             }
-            item.Quality = item.Quality - 1;
+
+            item.Quality = SetQuality(item, -1);
         }
 
-        protected override void CalculateQualityForExpiredItems(Item item)
+        protected override void CalculateQualityForExpiredItems(ExpirableItem item)
         {
             if (!IsItemExpired(item) || item.Quality <= 0)
             {
                 return;
             }
-            item.Quality = item.Quality - 1;
+            
+            item.Quality = SetQuality(item, -1);
         }
     }
 
     public class QualityCalculationSulfuras : QualityCalculation
     {
-        public QualityCalculationSulfuras(Item item) : base(item)
+        public QualityCalculationSulfuras(ExpirableItem item) : base(item)
         {}
-        protected override void CalculateQuality(Item item)
+        protected override void CalculateQuality(ExpirableItem item)
         {     
             //intentionally blank, no calculations needed                 
         }
-        protected override void CalculateSellIn(Item item)
+        protected override void CalculateSellIn(ExpirableItem item)
         {               
             //intentionally blank, no calculations needed          
         }
-        protected override void CalculateQualityForExpiredItems(Item item)
+        protected override void CalculateQualityForExpiredItems(ExpirableItem item)
         {               
             //intentionally blank, no calculations needed          
         }
@@ -70,62 +80,59 @@ namespace GildedRoseKata
 
     public class QualityCalculationAgedBrie : QualityCalculation
     {
-        public QualityCalculationAgedBrie(Item item) : base(item)
+        public QualityCalculationAgedBrie(ExpirableItem item) : base(item)
         {}
-        protected override void CalculateQuality(Item item)
+        protected override void CalculateQuality(ExpirableItem item)
         {
             if (item.Quality >= 50)
             {
                 return;
             }
-            item.Quality = item.Quality + 1;
+
+            item.Quality = SetQuality(item, 1);
         }
-        protected override void CalculateQualityForExpiredItems(Item item)
+        protected override void CalculateQualityForExpiredItems(ExpirableItem item)
         {
             if (!IsItemExpired(item) || item.Quality >= 50)
             {
                 return;
             }
-            item.Quality = item.Quality + 1;
+
+            item.Quality = SetQuality(item, 1);
         }
     }
 
     public class QualityCalculationBackstagePass : QualityCalculation
     {
-        public QualityCalculationBackstagePass(Item item) : base(item)
+        public QualityCalculationBackstagePass(ExpirableItem item) : base(item)
         {}   
 
-        protected override void CalculateQuality(Item item)
+        protected override void CalculateQuality(ExpirableItem item)
         {
             if (item.Quality >= 50)
             {
                 return;
             }
 
-            item.Quality = item.Quality + 1;
+            item.Quality = SetQuality(item, 1);
             
             if (item.SellIn < 11)
             {
-                if (item.Quality < 50)
-                {
-                    item.Quality = item.Quality + 1;
-                }
+                item.Quality = SetQuality(item, 1);
             }
 
             if (item.SellIn < 6)
             {
-                if (item.Quality < 50)
-                {
-                    item.Quality = item.Quality + 1;
-                }
+                item.Quality = SetQuality(item, 1);
             }
         }
-        protected override void CalculateQualityForExpiredItems(Item item)
+        protected override void CalculateQualityForExpiredItems(ExpirableItem item)
         {
             if (!IsItemExpired(item))
             {
                 return;
             }
+
             item.Quality = 0;
         }
     }
